@@ -47,7 +47,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const {
         data: { user },
       } = await supabase.auth.getUser()
-      setUser(user as User | null)
+      setUser(user as unknown as User | null)
       if (user) {
         await fetchProfile(user.id)
       }
@@ -59,7 +59,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(async (event, session) => {
-      setUser((session?.user as User) ?? null)
+      setUser((session?.user as unknown as User) ?? null)
       if (session?.user) {
         await fetchProfile(session.user.id)
       } else {
