@@ -1,233 +1,273 @@
 'use client';
 
-import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { Search, Shield, Star, Users, ArrowRight, CheckCircle } from 'lucide-react';
 
-interface Stats {
-  leads: { total: number; hot: number; new: number; matched: number };
-  contractors: { total: number; verified: number; withPhone: number };
-}
-
-interface Lead {
-  id: number;
-  name: string;
-  service_needed: string;
-  lead_temperature: string;
-  status: string;
-  location: string;
-}
-
-export default function Dashboard() {
-  const [stats, setStats] = useState<Stats | null>(null);
-  const [recentLeads, setRecentLeads] = useState<Lead[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    fetchData();
-  }, []);
-
-  const fetchData = async () => {
-    try {
-      const [leadsRes, contractorsRes] = await Promise.all([
-        fetch('/api/leads'),
-        fetch('/api/contractors'),
-      ]);
-      const leads = await leadsRes.json();
-      const contractors = await contractorsRes.json();
-      
-      setStats({
-        leads: {
-          total: leads.length,
-          hot: leads.filter((l: Lead) => l.lead_temperature === 'hot').length,
-          new: leads.filter((l: Lead) => l.status === 'new').length,
-          matched: leads.filter((l: Lead) => l.status === 'matched').length,
-        },
-        contractors: {
-          total: contractors.length,
-          verified: contractors.filter((c: any) => c.verification_level === 'verified').length,
-          withPhone: contractors.filter((c: any) => c.phone && c.phone.length > 0).length,
-        },
-      });
-      setRecentLeads(leads.slice(0, 5));
-    } catch (err) {
-      console.error('Failed to fetch:', err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-emerald-900 flex items-center justify-center">
-        <div className="text-white text-2xl animate-pulse">Loading dashboard...</div>
-      </div>
-    );
-  }
-
+export default function HomePage() {
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-white">
+      {/* Navigation */}
+      <nav className="bg-white border-b border-gray-100 sticky top-0 z-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between h-16 items-center">
+            <div className="flex items-center">
+              <Link href="/" className="text-2xl font-black">
+                Contractor Verified <span className="text-emerald-500">ATX</span>
+              </Link>
+            </div>
+            <div className="hidden md:flex items-center space-x-8">
+              <Link href="/contractors" className="text-gray-600 hover:text-gray-900 font-medium">
+                Find Contractors
+              </Link>
+              <Link href="/how-it-works" className="text-gray-600 hover:text-gray-900 font-medium">
+                How It Works
+              </Link>
+              <Link href="/for-contractors" className="text-gray-600 hover:text-gray-900 font-medium">
+                For Contractors
+              </Link>
+              <Link href="/start-project" className="px-4 py-2 bg-emerald-600 text-white rounded-lg font-semibold hover:bg-emerald-700 transition">
+                Start Your Project
+              </Link>
+            </div>
+          </div>
+        </div>
+      </nav>
+
       {/* Hero Section */}
-      <div className="bg-gradient-to-br from-slate-900 via-slate-800 to-emerald-900 text-white">
-        <div className="max-w-7xl mx-auto px-4 py-12">
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between">
+      <section className="bg-gradient-to-br from-slate-900 via-slate-800 to-emerald-900 text-white py-20 lg:py-32">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="max-w-3xl">
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-black leading-tight mb-6">
+              Austin's Most Trusted
+              <span className="text-emerald-400"> Contractor Network</span>
+            </h1>
+            <p className="text-xl text-gray-300 mb-8">
+              Every contractor verified. Every project protected. Find licensed, insured professionals backed by our 63,000+ member community.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4">
+              <Link href="/contractors" className="px-8 py-4 bg-emerald-500 text-white rounded-xl font-bold text-lg hover:bg-emerald-600 transition shadow-lg flex items-center justify-center gap-2">
+                <Search className="w-5 h-5" />
+                Find a Contractor
+              </Link>
+              <Link href="/start-project" className="px-8 py-4 bg-white/10 backdrop-blur text-white rounded-xl font-bold text-lg hover:bg-white/20 transition flex items-center justify-center gap-2">
+                Start Your Project
+                <ArrowRight className="w-5 h-5" />
+              </Link>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Trust Badges */}
+      <section className="py-12 bg-gray-50 border-b">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
             <div>
-              <h1 className="text-4xl md:text-5xl font-black mb-2">
-                Contractor Verified <span className="text-emerald-400">ATX</span>
-              </h1>
-              <p className="text-xl text-gray-300">
-                CRM Dashboard • Your contractor matchmaking command center
+              <div className="text-4xl font-black text-emerald-600">317+</div>
+              <div className="text-gray-600 font-medium">Verified Contractors</div>
+            </div>
+            <div>
+              <div className="text-4xl font-black text-emerald-600">63K+</div>
+              <div className="text-gray-600 font-medium">Community Members</div>
+            </div>
+            <div>
+              <div className="text-4xl font-black text-emerald-600">57</div>
+              <div className="text-gray-600 font-medium">Trade Categories</div>
+            </div>
+            <div>
+              <div className="text-4xl font-black text-emerald-600">100%</div>
+              <div className="text-gray-600 font-medium">Background Checked</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* How It Works */}
+      <section className="py-20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl font-black mb-4">How It Works</h2>
+            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+              Get matched with the perfect contractor in three simple steps
+            </p>
+          </div>
+          
+          <div className="grid md:grid-cols-3 gap-8">
+            <div className="text-center p-8">
+              <div className="w-16 h-16 bg-emerald-100 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                <Search className="w-8 h-8 text-emerald-600" />
+              </div>
+              <h3 className="text-xl font-bold mb-3">1. Tell Us Your Project</h3>
+              <p className="text-gray-600">
+                Describe what you need done and we'll match you with qualified contractors in your area.
               </p>
             </div>
-            <div className="mt-6 md:mt-0 flex gap-3">
-              <Link href="/leads" className="px-6 py-3 bg-emerald-600 rounded-xl font-bold hover:bg-emerald-500 transition shadow-lg flex items-center gap-2">
-                📋 View Leads
-              </Link>
-              <Link href="/contractors" className="px-6 py-3 bg-white/10 rounded-xl font-bold hover:bg-white/20 transition backdrop-blur flex items-center gap-2">
-                👷 Contractors
-              </Link>
+            
+            <div className="text-center p-8">
+              <div className="w-16 h-16 bg-emerald-100 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                <Shield className="w-8 h-8 text-emerald-600" />
+              </div>
+              <h3 className="text-xl font-bold mb-3">2. Get Verified Matches</h3>
+              <p className="text-gray-600">
+                Receive quotes from contractors we've verified for licensing, insurance, and quality.
+              </p>
+            </div>
+            
+            <div className="text-center p-8">
+              <div className="w-16 h-16 bg-emerald-100 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                <Star className="w-8 h-8 text-emerald-600" />
+              </div>
+              <h3 className="text-xl font-bold mb-3">3. Hire With Confidence</h3>
+              <p className="text-gray-600">
+                Choose your contractor and get your project done right, backed by our community guarantee.
+              </p>
             </div>
           </div>
+          
+          <div className="text-center mt-12">
+            <Link href="/start-project" className="inline-flex items-center gap-2 px-8 py-4 bg-emerald-600 text-white rounded-xl font-bold text-lg hover:bg-emerald-700 transition">
+              Start Your Project
+              <ArrowRight className="w-5 h-5" />
+            </Link>
+          </div>
+        </div>
+      </section>
 
-          {/* Big Stats */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-10">
-            <div className="bg-white/10 backdrop-blur rounded-2xl p-6">
-              <p className="text-gray-300 text-sm font-medium">Total Leads</p>
-              <p className="text-5xl font-black mt-1">{stats?.leads.total || 0}</p>
-              <p className="text-emerald-400 text-sm mt-2">📋 From Facebook group</p>
+      {/* Services */}
+      <section className="py-20 bg-gray-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl font-black mb-4">Popular Services</h2>
+            <p className="text-xl text-gray-600">Find experts for any home project</p>
+          </div>
+          
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {[
+              { name: 'General Contractors', icon: '🏗️' },
+              { name: 'Plumbing', icon: '🔧' },
+              { name: 'Electrical', icon: '⚡' },
+              { name: 'HVAC', icon: '❄️' },
+              { name: 'Roofing', icon: '🏠' },
+              { name: 'Painting', icon: '🎨' },
+              { name: 'Landscaping', icon: '🌿' },
+              { name: 'Flooring', icon: '🪵' },
+            ].map((service) => (
+              <Link
+                key={service.name}
+                href={`/contractors?trade=${encodeURIComponent(service.name)}`}
+                className="p-6 bg-white rounded-xl shadow-sm hover:shadow-md transition text-center"
+              >
+                <div className="text-4xl mb-3">{service.icon}</div>
+                <div className="font-semibold text-gray-900">{service.name}</div>
+              </Link>
+            ))}
+          </div>
+          
+          <div className="text-center mt-8">
+            <Link href="/contractors" className="text-emerald-600 font-semibold hover:underline">
+              View all 57 categories →
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* For Contractors CTA */}
+      <section className="py-20 bg-emerald-600 text-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-8">
+            <div className="max-w-xl">
+              <h2 className="text-3xl md:text-4xl font-black mb-4">Are You a Contractor?</h2>
+              <p className="text-xl text-emerald-100">
+                Join Austin's largest verified contractor network. Get quality leads, build your reputation, and grow your business.
+              </p>
             </div>
-            <div className="bg-white/10 backdrop-blur rounded-2xl p-6">
-              <p className="text-gray-300 text-sm font-medium">🔥 Hot Leads</p>
-              <p className="text-5xl font-black mt-1 text-red-400">{stats?.leads.hot || 0}</p>
-              <p className="text-gray-400 text-sm mt-2">Ready to convert</p>
+            <Link href="/for-contractors" className="px-8 py-4 bg-white text-emerald-600 rounded-xl font-bold text-lg hover:bg-gray-100 transition whitespace-nowrap">
+              Join Our Network
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* Trust Section */}
+      <section className="py-20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl font-black mb-4">Why Choose Contractor Verified?</h2>
+          </div>
+          
+          <div className="grid md:grid-cols-3 gap-8">
+            <div className="p-8 bg-white rounded-2xl border border-gray-100">
+              <CheckCircle className="w-10 h-10 text-emerald-500 mb-4" />
+              <h3 className="text-xl font-bold mb-3">Verified Contractors</h3>
+              <p className="text-gray-600">
+                Every contractor is verified for active Texas licensing, general liability insurance, and business registration.
+              </p>
             </div>
-            <div className="bg-white/10 backdrop-blur rounded-2xl p-6">
-              <p className="text-gray-300 text-sm font-medium">Contractors</p>
-              <p className="text-5xl font-black mt-1">{stats?.contractors.total || 0}</p>
-              <p className="text-emerald-400 text-sm mt-2">👷 In network</p>
+            
+            <div className="p-8 bg-white rounded-2xl border border-gray-100">
+              <Users className="w-10 h-10 text-emerald-500 mb-4" />
+              <h3 className="text-xl font-bold mb-3">Community Backed</h3>
+              <p className="text-gray-600">
+                Backed by 63,000+ Austin homeowners who share real reviews and recommendations.
+              </p>
             </div>
-            <div className="bg-white/10 backdrop-blur rounded-2xl p-6">
-              <p className="text-gray-300 text-sm font-medium">📞 With Phone</p>
-              <p className="text-5xl font-black mt-1 text-blue-400">{stats?.contractors.withPhone || 0}</p>
-              <p className="text-gray-400 text-sm mt-2">Contact ready</p>
+            
+            <div className="p-8 bg-white rounded-2xl border border-gray-100">
+              <Shield className="w-10 h-10 text-emerald-500 mb-4" />
+              <h3 className="text-xl font-bold mb-3">Local & Trusted</h3>
+              <p className="text-gray-600">
+                Austin-based contractors who know local codes, suppliers, and what works in Central Texas.
+              </p>
             </div>
           </div>
         </div>
-      </div>
-
-      {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 py-10">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* Recent Hot Leads */}
-          <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
-            <div className="p-6 border-b border-gray-100 flex items-center justify-between">
-              <h2 className="text-xl font-black">🔥 Recent Hot Leads</h2>
-              <Link href="/leads?filter=hot" className="text-emerald-600 font-bold hover:underline">
-                View all →
-              </Link>
-            </div>
-            <div className="divide-y divide-gray-100">
-              {recentLeads.filter(l => l.lead_temperature === 'hot').slice(0, 5).map(lead => (
-                <Link href="/leads" key={lead.id} className="block p-4 hover:bg-gray-50 transition">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="font-bold text-gray-900">{lead.name}</p>
-                      <p className="text-sm text-gray-500">{lead.service_needed} • {lead.location}</p>
-                    </div>
-                    <span className="px-3 py-1 bg-red-500 text-white rounded-full text-xs font-bold">
-                      🔥 HOT
-                    </span>
-                  </div>
-                </Link>
-              ))}
-              {recentLeads.filter(l => l.lead_temperature === 'hot').length === 0 && (
-                <div className="p-8 text-center text-gray-500">
-                  No hot leads yet. Start mining!
-                </div>
-              )}
-            </div>
-          </div>
-
-          {/* Quick Actions */}
-          <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
-            <div className="p-6 border-b border-gray-100">
-              <h2 className="text-xl font-black">⚡ Quick Actions</h2>
-            </div>
-            <div className="p-6 space-y-4">
-              <Link href="/leads" className="block p-4 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white rounded-xl hover:from-emerald-600 hover:to-emerald-700 transition shadow-lg">
-                <div className="flex items-center gap-4">
-                  <div className="text-4xl">📋</div>
-                  <div>
-                    <p className="font-bold text-lg">Manage Leads</p>
-                    <p className="text-emerald-100 text-sm">{stats?.leads.new || 0} new leads waiting</p>
-                  </div>
-                </div>
-              </Link>
-              
-              <Link href="/contractors" className="block p-4 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl hover:from-blue-600 hover:to-blue-700 transition shadow-lg">
-                <div className="flex items-center gap-4">
-                  <div className="text-4xl">👷</div>
-                  <div>
-                    <p className="font-bold text-lg">Contractor Network</p>
-                    <p className="text-blue-100 text-sm">{stats?.contractors.verified || 0} verified contractors</p>
-                  </div>
-                </div>
-              </Link>
-
-              <Link href="/leads" className="block p-4 bg-gradient-to-r from-purple-500 to-purple-600 text-white rounded-xl hover:from-purple-600 hover:to-purple-700 transition shadow-lg">
-                <div className="flex items-center gap-4">
-                  <div className="text-4xl">🎯</div>
-                  <div>
-                    <p className="font-bold text-lg">Match Leads</p>
-                    <p className="text-purple-100 text-sm">Connect leads with contractors</p>
-                  </div>
-                </div>
-              </Link>
-            </div>
-          </div>
-        </div>
-
-        {/* Conversion Funnel */}
-        <div className="mt-8 bg-white rounded-2xl shadow-lg overflow-hidden">
-          <div className="p-6 border-b border-gray-100">
-            <h2 className="text-xl font-black">📊 Lead Funnel</h2>
-          </div>
-          <div className="p-6">
-            <div className="flex items-center justify-between gap-4">
-              <div className="flex-1 text-center p-6 bg-blue-50 rounded-xl">
-                <p className="text-4xl font-black text-blue-600">{stats?.leads.new || 0}</p>
-                <p className="text-sm text-gray-600 font-medium mt-1">🆕 New</p>
-              </div>
-              <div className="text-gray-300 text-2xl">→</div>
-              <div className="flex-1 text-center p-6 bg-yellow-50 rounded-xl">
-                <p className="text-4xl font-black text-yellow-600">0</p>
-                <p className="text-sm text-gray-600 font-medium mt-1">📞 Contacted</p>
-              </div>
-              <div className="text-gray-300 text-2xl">→</div>
-              <div className="flex-1 text-center p-6 bg-purple-50 rounded-xl">
-                <p className="text-4xl font-black text-purple-600">{stats?.leads.matched || 0}</p>
-                <p className="text-sm text-gray-600 font-medium mt-1">🎯 Matched</p>
-              </div>
-              <div className="text-gray-300 text-2xl">→</div>
-              <div className="flex-1 text-center p-6 bg-green-50 rounded-xl">
-                <p className="text-4xl font-black text-green-600">0</p>
-                <p className="text-sm text-gray-600 font-medium mt-1">✅ Converted</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+      </section>
 
       {/* Footer */}
-      <div className="bg-slate-900 text-white py-8 mt-10">
-        <div className="max-w-7xl mx-auto px-4 text-center">
-          <p className="text-gray-400">
-            Contractor Verified ATX • Built with ❤️ for Austin contractors
-          </p>
-          <p className="text-sm text-gray-500 mt-2">
-            63,400+ Facebook group members • Austin's #1 contractor network
-          </p>
+      <footer className="bg-slate-900 text-white py-16">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid md:grid-cols-4 gap-8 mb-12">
+            <div>
+              <div className="text-2xl font-black mb-4">
+                Contractor Verified <span className="text-emerald-400">ATX</span>
+              </div>
+              <p className="text-gray-400">
+                Austin's most trusted contractor network. Every contractor verified, every project protected.
+              </p>
+            </div>
+            
+            <div>
+              <h4 className="font-bold mb-4">Homeowners</h4>
+              <ul className="space-y-2 text-gray-400">
+                <li><Link href="/contractors" className="hover:text-white transition">Find a Contractor</Link></li>
+                <li><Link href="/how-it-works" className="hover:text-white transition">How It Works</Link></li>
+                <li><Link href="/start-project" className="hover:text-white transition">Start a Project</Link></li>
+              </ul>
+            </div>
+            
+            <div>
+              <h4 className="font-bold mb-4">Contractors</h4>
+              <ul className="space-y-2 text-gray-400">
+                <li><Link href="/for-contractors" className="hover:text-white transition">Join Our Network</Link></li>
+                <li><Link href="/for-contractors#pricing" className="hover:text-white transition">Pricing & Plans</Link></li>
+              </ul>
+            </div>
+            
+            <div>
+              <h4 className="font-bold mb-4">Company</h4>
+              <ul className="space-y-2 text-gray-400">
+                <li><Link href="/about" className="hover:text-white transition">About Us</Link></li>
+                <li><Link href="/contact" className="hover:text-white transition">Contact</Link></li>
+              </ul>
+            </div>
+          </div>
+          
+          <div className="border-t border-gray-800 pt-8 text-center text-gray-500">
+            <p>© 2026 Contractor Verified ATX. All rights reserved.</p>
+            <p className="mt-2">Serving Austin, Round Rock, Cedar Park, Pflugerville, Georgetown, Lakeway & surrounding areas.</p>
+          </div>
         </div>
-      </div>
+      </footer>
     </div>
   );
 }
