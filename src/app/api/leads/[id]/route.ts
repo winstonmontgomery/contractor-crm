@@ -3,11 +3,12 @@ import { getLeadById, updateLead, deleteLead, matchLeadToContractor } from '../.
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const id = parseInt(params.id);
-    const lead = getLeadById(id);
+    const { id } = await params;
+    const leadId = parseInt(id);
+    const lead = getLeadById(leadId);
     if (!lead) {
       return NextResponse.json({ error: 'Lead not found' }, { status: 404 });
     }
@@ -20,19 +21,20 @@ export async function GET(
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const id = parseInt(params.id);
+    const { id } = await params;
+    const leadId = parseInt(id);
     const body = await request.json();
     
     // Handle contractor matching
     if (body.assigned_contractor_id !== undefined) {
-      const lead = matchLeadToContractor(id, body.assigned_contractor_id);
+      const lead = matchLeadToContractor(leadId, body.assigned_contractor_id);
       return NextResponse.json(lead);
     }
     
-    const lead = updateLead(id, body);
+    const lead = updateLead(leadId, body);
     if (!lead) {
       return NextResponse.json({ error: 'Lead not found' }, { status: 404 });
     }
@@ -45,11 +47,12 @@ export async function PUT(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const id = parseInt(params.id);
-    const success = deleteLead(id);
+    const { id } = await params;
+    const leadId = parseInt(id);
+    const success = deleteLead(leadId);
     if (!success) {
       return NextResponse.json({ error: 'Lead not found' }, { status: 404 });
     }

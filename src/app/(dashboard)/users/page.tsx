@@ -62,9 +62,9 @@ export default function UsersPage() {
         .select("*")
         .order("created_at", { ascending: false })
 
-      if (profiles) {
+      if (profiles && Array.isArray(profiles)) {
         // Fetch verifications for contractors
-        const contractorIds = profiles
+        const contractorIds = (profiles as Profile[])
           .filter((p) => p.role === "CONTRACTOR")
           .map((p) => p.id)
 
@@ -75,10 +75,10 @@ export default function UsersPage() {
             .in("contractor_id", contractorIds)
 
           const verificationsMap = new Map(
-            verifications?.map((v) => [v.contractor_id, v]) || []
+            (verifications as ContractorVerification[] | null)?.map((v) => [v.contractor_id, v]) || []
           )
 
-          const usersWithVerifications = profiles.map((p) => ({
+          const usersWithVerifications = (profiles as Profile[]).map((p) => ({
             ...p,
             verification: verificationsMap.get(p.id),
           }))

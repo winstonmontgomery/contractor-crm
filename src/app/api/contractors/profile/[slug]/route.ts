@@ -6,11 +6,11 @@ const dbPath = path.join(process.cwd(), 'data', 'cv.db');
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { slug: string } }
+  { params }: { params: Promise<{ slug: string }> }
 ) {
   try {
+    const { slug } = await params;
     const db = new Database(dbPath, { readonly: true });
-    const slug = params.slug;
     
     // Try to find by ID first
     let contractor = null;

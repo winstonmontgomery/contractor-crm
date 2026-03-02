@@ -3,6 +3,15 @@
 ## Overview
 Automated hourly scraping of Contractor Verified Austin Facebook group to capture leads and contractor prospects.
 
+## ⚠️ AUTO-POSTING DISABLED (2026-03-01)
+Per CJ approval, automated comment/posting is disabled. The cron job will:
+- ✅ Read and classify posts
+- ✅ Log leads and prospects to CRM database
+- ✅ Alert CJ on urgent leads
+- ❌ NOT post comments or replies (impersonation/ToS concerns)
+
+CJ handles manual moderator responses. Winston handles backend logging only.
+
 ## Cron Schedule
 
 ```bash

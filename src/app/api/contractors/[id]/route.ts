@@ -3,11 +3,12 @@ import { getContractorById, updateContractor, deleteContractor } from '../../../
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const id = parseInt(params.id);
-    const contractor = getContractorById(id);
+    const { id } = await params;
+    const contractorId = parseInt(id);
+    const contractor = getContractorById(contractorId);
     if (!contractor) {
       return NextResponse.json({ error: 'Contractor not found' }, { status: 404 });
     }
@@ -20,12 +21,13 @@ export async function GET(
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const id = parseInt(params.id);
+    const { id } = await params;
+    const contractorId = parseInt(id);
     const body = await request.json();
-    const contractor = updateContractor(id, body);
+    const contractor = updateContractor(contractorId, body);
     if (!contractor) {
       return NextResponse.json({ error: 'Contractor not found' }, { status: 404 });
     }
@@ -38,11 +40,12 @@ export async function PUT(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const id = parseInt(params.id);
-    const success = deleteContractor(id);
+    const { id } = await params;
+    const contractorId = parseInt(id);
+    const success = deleteContractor(contractorId);
     if (!success) {
       return NextResponse.json({ error: 'Contractor not found' }, { status: 404 });
     }

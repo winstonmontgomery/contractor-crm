@@ -55,9 +55,9 @@ export default function ApplicationReviewPage() {
         .single()
 
       if (data) {
-        setApplication(data)
-        setAdminNotes(data.admin_notes || "")
-        setReviewerNotes(data.reviewer_notes || "")
+        setApplication(data as ContractorApplication)
+        setAdminNotes((data as ContractorApplication).admin_notes || "")
+        setReviewerNotes((data as ContractorApplication).reviewer_notes || "")
       }
       setLoading(false)
     }
