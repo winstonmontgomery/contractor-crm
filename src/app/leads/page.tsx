@@ -120,6 +120,34 @@ export default function LeadsPage() {
     }
   };
 
+  const handleUnmatch = async (leadId: number) => {
+    try {
+      await fetch(`/api/leads/${leadId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ assigned_to: null, status: 'new' }),
+      });
+      setLeads(leads.map(l => l.id === leadId ? { ...l, status: 'new', assigned_to: null } : l));
+      showToast('Lead unmatched');
+    } catch (err) {
+      showToast('Failed to unmatch');
+    }
+  };
+
+  const handleInlineEdit = async (leadId: number, field: string, value: string) => {
+    try {
+      await fetch(`/api/leads/${leadId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ [field]: value }),
+      });
+      setLeads(leads.map(l => l.id === leadId ? { ...l, [field]: value } : l));
+      showToast('Updated!');
+    } catch (err) {
+      showToast('Failed to update');
+    }
+  };
+
   const handleAddLead = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const form = e.currentTarget;

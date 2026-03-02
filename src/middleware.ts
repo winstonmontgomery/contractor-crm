@@ -3,6 +3,7 @@ import type { NextRequest } from 'next/server'
 
 // Admin routes that require authentication
 const PROTECTED_ROUTES = [
+  '/crm',
   '/dashboard',
   '/leads',
   '/admin',
@@ -44,6 +45,7 @@ export function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
+    '/crm/:path*',
     '/dashboard/:path*',
     '/leads/:path*',
     '/admin/:path*',
