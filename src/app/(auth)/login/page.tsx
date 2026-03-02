@@ -31,7 +31,7 @@ function LoginForm() {
     })
 
     if (error) {
-      setError(error.message)
+      setError((error as { message: string }).message)
       setLoading(false)
       return
     }
