@@ -335,9 +335,15 @@ export default function LeadsPage() {
                       </td>
                       <td className="px-6 py-4" onClick={e => e.stopPropagation()}>
                         <div className="flex gap-2">
-                          <button onClick={() => { setSelectedLead(lead); setShowMatchModal(true); }} className="px-3 py-2 bg-purple-600 text-white rounded-lg font-bold hover:bg-purple-700 text-sm shadow">
-                            🎯 Match
-                          </button>
+                          {lead.assigned_to ? (
+                            <button onClick={() => handleUnmatch(lead.id)} className="px-3 py-2 bg-orange-500 text-white rounded-lg font-bold hover:bg-orange-600 text-sm shadow">
+                              ↩️ Unmatch
+                            </button>
+                          ) : (
+                            <button onClick={() => { setSelectedLead(lead); setShowMatchModal(true); }} className="px-3 py-2 bg-purple-600 text-white rounded-lg font-bold hover:bg-purple-700 text-sm shadow">
+                              🎯 Match
+                            </button>
+                          )}
                           <button onClick={() => handleDelete(lead.id)} className="px-3 py-2 bg-red-100 text-red-700 rounded-lg font-bold hover:bg-red-200 text-sm">
                             🗑️
                           </button>
@@ -455,75 +461,130 @@ export default function LeadsPage() {
         </div>
       )}
 
-      {/* View Lead Modal */}
+      {/* View Lead Modal - With Inline Editing */}
       {selectedLead && !showMatchModal && (
         <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4" onClick={() => setSelectedLead(null)}>
           <div className="bg-white rounded-2xl w-full max-w-lg shadow-2xl" onClick={e => e.stopPropagation()}>
             <div className="p-6 border-b border-gray-100 flex justify-between items-start">
-              <div>
-                <h2 className="text-2xl font-black">{selectedLead.name}</h2>
+              <div className="flex-1">
+                <input
+                  type="text"
+                  defaultValue={selectedLead.name}
+                  onBlur={(e) => handleInlineEdit(selectedLead.id, 'name', e.target.value)}
+                  className="text-2xl font-black bg-transparent border-b-2 border-transparent hover:border-gray-300 focus:border-emerald-500 outline-none w-full"
+                />
                 <div className="flex gap-2 mt-2">
-                  <span className={`px-3 py-1 rounded-full text-xs font-black ${
-                    selectedLead.lead_temperature === 'hot' ? 'bg-red-500 text-white' :
-                    selectedLead.lead_temperature === 'warm' ? 'bg-orange-400 text-white' :
-                    'bg-blue-300 text-white'
-                  }`}>
-                    {selectedLead.lead_temperature?.toUpperCase()}
-                  </span>
+                  <select
+                    defaultValue={selectedLead.lead_temperature}
+                    onChange={(e) => {
+                      handleInlineEdit(selectedLead.id, 'lead_temperature', e.target.value);
+                      setSelectedLead({...selectedLead, lead_temperature: e.target.value});
+                    }}
+                    className={`px-3 py-1 rounded-full text-xs font-black cursor-pointer ${
+                      selectedLead.lead_temperature === 'hot' ? 'bg-red-500 text-white' :
+                      selectedLead.lead_temperature === 'warm' ? 'bg-orange-400 text-white' :
+                      'bg-blue-300 text-white'
+                    }`}
+                  >
+                    <option value="hot">🔥 HOT</option>
+                    <option value="warm">☀️ WARM</option>
+                    <option value="cold">❄️ COLD</option>
+                  </select>
                   <span className="px-3 py-1 rounded-full text-xs font-bold bg-gray-100 text-gray-700">
                     {selectedLead.status?.toUpperCase()}
                   </span>
                 </div>
               </div>
-              <button onClick={() => setSelectedLead(null)} className="text-gray-400 hover:text-gray-600 text-3xl font-light">×</button>
+              <button onClick={() => setSelectedLead(null)} className="text-gray-400 hover:text-gray-600 text-3xl font-light ml-4">×</button>
             </div>
             <div className="p-6 space-y-4">
-              {selectedLead.phone && (
-                <div className="flex items-center justify-between p-4 bg-blue-50 rounded-xl">
-                  <div>
-                    <p className="text-sm text-gray-500 font-medium">Phone</p>
-                    <p className="font-black text-xl text-blue-600">{selectedLead.phone}</p>
-                  </div>
-                  <button onClick={() => copyToClipboard(selectedLead.phone!)} className="px-4 py-2 bg-blue-600 text-white rounded-lg font-bold hover:bg-blue-700 shadow">
+              <div className="flex items-center justify-between p-4 bg-blue-50 rounded-xl">
+                <div className="flex-1">
+                  <p className="text-sm text-gray-500 font-medium">Phone</p>
+                  <input
+                    type="tel"
+                    defaultValue={selectedLead.phone || ''}
+                    placeholder="Add phone number"
+                    onBlur={(e) => handleInlineEdit(selectedLead.id, 'phone', e.target.value)}
+                    className="font-black text-xl text-blue-600 bg-transparent border-b-2 border-transparent hover:border-blue-300 focus:border-blue-500 outline-none w-full"
+                  />
+                </div>
+                {selectedLead.phone && (
+                  <button onClick={() => copyToClipboard(selectedLead.phone!)} className="px-4 py-2 bg-blue-600 text-white rounded-lg font-bold hover:bg-blue-700 shadow ml-4">
                     Copy
                   </button>
+                )}
+              </div>
+              <div className="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
+                <div className="flex-1">
+                  <p className="text-sm text-gray-500 font-medium">Email</p>
+                  <input
+                    type="email"
+                    defaultValue={selectedLead.email || ''}
+                    placeholder="Add email"
+                    onBlur={(e) => handleInlineEdit(selectedLead.id, 'email', e.target.value)}
+                    className="font-bold text-gray-900 bg-transparent border-b-2 border-transparent hover:border-gray-300 focus:border-emerald-500 outline-none w-full"
+                  />
                 </div>
-              )}
-              {selectedLead.email && (
-                <div className="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
-                  <div>
-                    <p className="text-sm text-gray-500 font-medium">Email</p>
-                    <p className="font-bold text-gray-900">{selectedLead.email}</p>
-                  </div>
-                  <button onClick={() => copyToClipboard(selectedLead.email!)} className="px-4 py-2 bg-gray-600 text-white rounded-lg font-bold hover:bg-gray-700">
+                {selectedLead.email && (
+                  <button onClick={() => copyToClipboard(selectedLead.email!)} className="px-4 py-2 bg-gray-600 text-white rounded-lg font-bold hover:bg-gray-700 ml-4">
                     Copy
                   </button>
-                </div>
-              )}
-              <div>
-                <p className="text-sm text-gray-500 font-medium">Service Needed</p>
-                <p className="font-bold text-lg">{selectedLead.service_needed || 'Not specified'}</p>
+                )}
               </div>
               <div>
-                <p className="text-sm text-gray-500 font-medium">Location</p>
-                <p className="font-bold text-lg">{selectedLead.location || 'Not specified'}</p>
+                <p className="text-sm text-gray-500 font-medium mb-1">Service Needed</p>
+                <input
+                  type="text"
+                  defaultValue={selectedLead.service_needed || ''}
+                  placeholder="e.g. HVAC, Plumbing, Roofing"
+                  onBlur={(e) => handleInlineEdit(selectedLead.id, 'service_needed', e.target.value)}
+                  className="font-bold text-lg bg-transparent border-b-2 border-transparent hover:border-gray-300 focus:border-emerald-500 outline-none w-full"
+                />
               </div>
               <div>
-                <p className="text-sm text-gray-500 font-medium">Details</p>
-                <p className="font-medium text-gray-700">{selectedLead.details || 'No details'}</p>
+                <p className="text-sm text-gray-500 font-medium mb-1">Location</p>
+                <input
+                  type="text"
+                  defaultValue={selectedLead.location || ''}
+                  placeholder="e.g. Austin, TX"
+                  onBlur={(e) => handleInlineEdit(selectedLead.id, 'location', e.target.value)}
+                  className="font-bold text-lg bg-transparent border-b-2 border-transparent hover:border-gray-300 focus:border-emerald-500 outline-none w-full"
+                />
+              </div>
+              <div>
+                <p className="text-sm text-gray-500 font-medium mb-1">Details</p>
+                <textarea
+                  defaultValue={selectedLead.details || ''}
+                  placeholder="Describe the project..."
+                  onBlur={(e) => handleInlineEdit(selectedLead.id, 'details', e.target.value)}
+                  rows={3}
+                  className="font-medium text-gray-700 bg-transparent border-2 border-transparent hover:border-gray-200 focus:border-emerald-500 outline-none w-full rounded-lg p-2 resize-none"
+                />
               </div>
               <div>
                 <p className="text-sm text-gray-500 font-medium">Source</p>
                 <p className="font-medium">{selectedLead.source || 'Unknown'}</p>
               </div>
+              {selectedLead.assigned_to && (
+                <div className="p-4 bg-purple-50 rounded-xl">
+                  <p className="text-sm text-purple-600 font-bold">🎯 Matched to Contractor #{selectedLead.assigned_to}</p>
+                </div>
+              )}
             </div>
             <div className="p-6 border-t border-gray-100 flex gap-3">
               <button onClick={() => setSelectedLead(null)} className="flex-1 px-4 py-3 border-2 border-gray-200 rounded-xl font-bold hover:bg-gray-50">
                 Close
               </button>
-              <button onClick={() => setShowMatchModal(true)} className="flex-1 px-4 py-3 bg-purple-600 text-white rounded-xl font-bold hover:bg-purple-700 shadow-lg">
-                🎯 Match to Contractor
-              </button>
+              {selectedLead.assigned_to ? (
+                <button onClick={() => handleUnmatch(selectedLead.id)} className="flex-1 px-4 py-3 bg-orange-500 text-white rounded-xl font-bold hover:bg-orange-600 shadow-lg">
+                  ↩️ Unmatch
+                </button>
+              ) : (
+                <button onClick={() => setShowMatchModal(true)} className="flex-1 px-4 py-3 bg-purple-600 text-white rounded-xl font-bold hover:bg-purple-700 shadow-lg">
+                  🎯 Match to Contractor
+                </button>
+              )}
             </div>
           </div>
         </div>
