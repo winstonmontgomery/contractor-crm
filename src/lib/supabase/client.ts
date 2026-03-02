@@ -1,9 +1,19 @@
 // Demo mode - mock Supabase client
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-type MockAuthResponse = { data: any; error: null | { message: string } };
+/* eslint-disable @typescript-eslint/no-explicit-any */
+type MockUser = { 
+  id: string; 
+  email: string;
+  user_metadata: { full_name: string; role: string };
+};
+
+type MockSession = { 
+  user: MockUser;
+} | null;
+
+type AuthCallback = (event: string, session: MockSession) => void | Promise<void>;
 
 export function createClient() {
-  const mockUser = { 
+  const mockUser: MockUser = { 
     id: 'demo-user-1', 
     email: 'admin@contractorverified.com',
     user_metadata: { full_name: 'Demo Admin', role: 'ADMIN' }
@@ -11,24 +21,24 @@ export function createClient() {
   
   return {
     auth: {
-      getUser: async (): Promise<MockAuthResponse> => ({ 
+      getUser: async () => ({ 
         data: { user: mockUser }, 
         error: null 
       }),
-      getSession: async (): Promise<MockAuthResponse> => ({ 
-        data: { session: { user: mockUser } }, 
+      getSession: async () => ({ 
+        data: { session: { user: mockUser } as MockSession }, 
         error: null 
       }),
-      signOut: async (): Promise<{ error: null }> => ({ error: null }),
-      signInWithPassword: async (_credentials: { email: string; password: string }): Promise<MockAuthResponse> => ({ 
+      signOut: async () => ({ error: null }),
+      signInWithPassword: async (_credentials: { email: string; password: string }) => ({ 
         data: { user: mockUser, session: { user: mockUser } }, 
         error: null 
       }),
-      signUp: async (_credentials: { email: string; password: string; options?: { data?: Record<string, unknown> } }): Promise<MockAuthResponse> => ({ 
+      signUp: async (_credentials: { email: string; password: string; options?: { data?: Record<string, unknown> } }) => ({ 
         data: { user: mockUser, session: null }, 
         error: null 
       }),
-      onAuthStateChange: (_callback: (event: string, session: { user: typeof mockUser } | null) => void) => ({ 
+      onAuthStateChange: (_callback: AuthCallback) => ({ 
         data: { subscription: { unsubscribe: () => {} } } 
       }),
     },
